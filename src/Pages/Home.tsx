@@ -78,6 +78,13 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (loggedIn !== "true") {
+      window.location.href = "/login";
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchWeatherData = async () => {
       try {
         const response = await fetch(
@@ -112,18 +119,44 @@ const Dashboard = () => {
   }, []);
 
   const navigate = useNavigate();
+
+  const userLoggedIn = localStorage.getItem("loggedIn");
   return (
     <div className="p-8 px-12 mx-auto">
       <div className="flex justify-between">
         <h1 className="text-3xl font-bold mb-6">Disaster Alert Dashboard</h1>
-        <Button
-          variant={"outline"}
-          onClick={() => {
-            navigate("/admin-panel");
-          }}
-        >
-          Admin Panel
-        </Button>
+        <div className="flex gap-4">
+          {userLoggedIn !== "true" && (
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              Login
+            </Button>
+          )}
+          <Button
+            variant={"outline"}
+            onClick={() => {
+              navigate("/admin-panel");
+            }}
+          >
+            Admin Panel
+          </Button>
+          {userLoggedIn && (
+            <Button
+              variant={"outline"}
+              className="bg-red-500 text-white hover:bg-red-600"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/login");
+              }}
+            >
+              Logout
+            </Button>
+          )}
+        </div>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-lg w-64 text-center mb-6">
         <div className="text-gray-500 text-xs font-semibold uppercase">
@@ -175,6 +208,8 @@ const Dashboard = () => {
         <TabsContent value="hourly-weather">
           {weatherData && weatherData.list && (
             <div className="grid grid-cols-3 gap-4">
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any,
+              @typescript-eslint/no-explicit-any
               {weatherData.list.map((weather: any) => (
                 <div
                   key={weather.dt}

@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChevronLeft, ChevronRight, AlertCircle, List } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -8,7 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,8 +30,73 @@ export interface Disaster {
   date: string;
   severity: string;
   status: string;
-  details: string; // Added details field
+  details: string;
 }
+
+const Sidebar = ({
+  collapsed,
+  setCollapsed,
+}: {
+  collapsed: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const toggleSidebar = () => setCollapsed(!collapsed);
+
+  return (
+    <div
+      className={`bg-gray-900 text-white transition-all duration-300 ease-in-out ${
+        collapsed ? "w-16" : "w-64"
+      }`}
+    >
+      <div className="flex items-center justify-between p-4">
+        {!collapsed && <h2 className="text-xl font-bold">Admin Panel</h2>}
+        <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+      <ScrollArea className="h-[calc(100vh-64px)]">
+        <nav className="space-y-2 p-2">
+          <SidebarLink
+            icon={<AlertCircle className="h-4 w-4" />}
+            label="Send Alert"
+            collapsed={collapsed}
+            link={"/admin/send-alert"}
+          />
+          <SidebarLink
+            icon={<List className="h-4 w-4" />}
+            label="Disasters"
+            collapsed={collapsed}
+            link={"/admin-panel"}
+          />
+        </nav>
+      </ScrollArea>
+    </div>
+  );
+};
+
+interface SidebarLinkProps {
+  icon: React.ReactNode;
+  label: string;
+  collapsed: boolean;
+  link: string;
+}
+
+const SidebarLink = ({ icon, label, collapsed, link }: SidebarLinkProps) => (
+  <Button
+    variant="ghost"
+    className={`w-full justify-start ${collapsed ? "px-2" : "px-4"}`}
+    onClick={() => {
+      window.open(link, "_self");
+    }}
+  >
+    {icon}
+    {!collapsed && <span className="ml-2">{label}</span>}
+  </Button>
+);
 
 const AdminDisasterList = () => {
   const [disasters, setDisasters] = useState<Disaster[] | null>(null);
@@ -91,7 +158,7 @@ const AdminDisasterList = () => {
       severity: "low",
       status: "",
       name: "",
-      details: "", // Initialize details as an empty string
+      details: "",
     });
     setIsDialogOpen(true);
   };
@@ -303,4 +370,18 @@ const AdminDisasterList = () => {
   );
 };
 
-export default AdminDisasterList;
+export default function AdminSendAlert() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  return (
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+      />
+      <main className="flex-1 overflow-auto p-8">
+        <AdminDisasterList />
+      </main>
+    </div>
+  );
+}

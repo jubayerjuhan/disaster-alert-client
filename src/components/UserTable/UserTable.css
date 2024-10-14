@@ -1,0 +1,29 @@
+.wrapper-class {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.editor-class {
+  flex: 1;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  font-family: "Arial", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.toolbar-class {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #eee;
+  border-bottom: 1px solid #ddd;
+  border-radius: 4px 4px 0 0;
+}
