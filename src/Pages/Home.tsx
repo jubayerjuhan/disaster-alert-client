@@ -6,6 +6,7 @@ import moment from "moment";
 import DisasterTable from "@/components/DisasterTable/DisasterTable";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/Navbar/Navbar";
 
 interface Weather {
   id: number;
@@ -122,138 +123,119 @@ const Dashboard = () => {
 
   const userLoggedIn = localStorage.getItem("loggedIn");
   return (
-    <div className="p-8 px-12 mx-auto">
-      <div className="flex justify-between">
-        <h1 className="text-3xl font-bold mb-6">Disaster Alert Dashboard</h1>
-        <div className="flex gap-4">
-          {userLoggedIn !== "true" && (
-            <Button
-              variant={"outline"}
-              onClick={() => {
-                navigate("/login");
-              }}
-            >
-              Login
-            </Button>
-          )}
-          <Button
-            variant={"outline"}
-            onClick={() => {
-              navigate("/admin-panel");
-            }}
-          >
-            Admin Panel
-          </Button>
-          {userLoggedIn && (
-            <Button
-              variant={"outline"}
-              className="bg-red-500 text-white hover:bg-red-600"
-              onClick={() => {
-                localStorage.clear();
-                navigate("/login");
-              }}
-            >
-              Logout
-            </Button>
-          )}
-        </div>
-      </div>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-64 text-center mb-6">
-        <div className="text-gray-500 text-xs font-semibold uppercase">
-          Sunrise & Sunset
-        </div>
-        <div className="mt-4">
-          <div className="text-gray-900 mt-2 font-semibold">
-            Sunrise: {moment(weatherData?.city?.sunrise).format("h:mm A")}
-          </div>
-          <div className="text-gray-900 mt-2 font-semibold">
-            Sunset: {moment(weatherData?.city?.sunset).format("h:mm A")}
+    <>
+      <Navbar />
+      <div className="p-8 px-12 mx-auto">
+        <div className="flex justify-between">
+          <h1 className="text-3xl font-bold mb-6">Disaster Alert Dashboard</h1>
+          <div className="flex gap-4">
+            {userLoggedIn !== "true" && (
+              <Button
+                variant={"outline"}
+                onClick={() => {
+                  navigate("/login");
+                }}
+              >
+                Login
+              </Button>
+            )}
           </div>
         </div>
-      </div>
+        <div className="bg-white p-6 rounded-lg shadow-lg w-64 text-center mb-6">
+          <div className="text-gray-500 text-xs font-semibold uppercase">
+            Sunrise & Sunset
+          </div>
+          <div className="mt-4">
+            <div className="text-gray-900 mt-2 font-semibold">
+              Sunrise: {moment(weatherData?.city?.sunrise).format("h:mm A")}
+            </div>
+            <div className="text-gray-900 mt-2 font-semibold">
+              Sunset: {moment(weatherData?.city?.sunset).format("h:mm A")}
+            </div>
+          </div>
+        </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg w-64 text-center">
-        <div className="text-gray-500 text-xs font-semibold uppercase">
-          Current Weather
+        <div className="bg-white p-6 rounded-lg shadow-lg w-64 text-center">
+          <div className="text-gray-500 text-xs font-semibold uppercase">
+            Current Weather
+          </div>
+          <div className="mt-4">
+            <div className="text-5xl font-bold mt-4">
+              {currentWeather
+                ? (currentWeather.main.temp - 273.15).toFixed(0)
+                : ""}
+              <span className="text-xl align-top">°C</span>
+            </div>
+
+            <div className="text-gray-500 text-sm mt-2">
+              RealFeel®{" "}
+              {currentWeather
+                ? (currentWeather.main.feels_like - 273.15).toFixed(0)
+                : ""}
+              °
+            </div>
+
+            <div className="text-gray-900 mt-2 font-semibold">
+              {currentWeather?.weather[0].main}
+            </div>
+          </div>
         </div>
-        <div className="mt-4">
-          <div className="text-5xl font-bold mt-4">
-            {currentWeather
-              ? (currentWeather.main.temp - 273.15).toFixed(0)
-              : ""}
-            <span className="text-xl align-top">°C</span>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+          <TabsList className="mb-4">
+            <TabsTrigger value="hourly-weather">Hourly Weather</TabsTrigger>
+            <TabsTrigger value="disaster-list">
+              Recent And Upcoming Disaster
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="text-gray-500 text-sm mt-2">
-            RealFeel®{" "}
-            {currentWeather
-              ? (currentWeather.main.feels_like - 273.15).toFixed(0)
-              : ""}
-            °
-          </div>
-
-          <div className="text-gray-900 mt-2 font-semibold">
-            {currentWeather?.weather[0].main}
-          </div>
-        </div>
-      </div>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList className="mb-4">
-          <TabsTrigger value="hourly-weather">Hourly Weather</TabsTrigger>
-          <TabsTrigger value="disaster-list">
-            Recent And Upcoming Disaster
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="hourly-weather">
-          {weatherData && weatherData.list && (
-            <div className="grid grid-cols-3 gap-4">
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any,
-              @typescript-eslint/no-explicit-any
-              {weatherData.list.map((weather: any) => (
-                <div
-                  key={weather.dt}
-                  className="bg-white p-6 rounded-lg shadow-lg text-center"
-                >
-                  <div className="text-gray-500 text-xs font-semibold uppercase">
-                    {moment(weather.dt_txt).format("ddd, hA")}
-                  </div>
-                  <div className="mt-4">
-                    <Cloud className="w-8 h-8 mx-auto" />
-                    <div className="text-gray-900 mt-2 font-semibold">
-                      {Number(weather.main.temp - 273).toFixed()}°C
+          <TabsContent value="hourly-weather">
+            {weatherData && weatherData.list && (
+              <div className="grid grid-cols-3 gap-4">
+                {weatherData.list.map((weather) => (
+                  <div
+                    key={weather.dt}
+                    className="bg-white p-6 rounded-lg shadow-lg text-center"
+                  >
+                    <div className="text-gray-500 text-xs font-semibold uppercase">
+                      {moment(weather.dt_txt).format("ddd, hA")}
+                    </div>
+                    <div className="mt-4">
+                      <Cloud className="w-8 h-8 mx-auto" />
+                      <div className="text-gray-900 mt-2 font-semibold">
+                        {Number(weather.main.temp - 273).toFixed()}°C
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </TabsContent>
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-        <TabsContent value="disaster-list">
-          <DisasterTable />
-        </TabsContent>
+          <TabsContent value="disaster-list">
+            <DisasterTable />
+          </TabsContent>
 
-        <TabsContent value="admin">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Info className="mr-2" />
-                Admin Controls
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Admin features would go here, such as:</p>
-              <ul className="list-disc list-inside">
-                <li>Manage disaster information</li>
-                <li>User management</li>
-                <li>Send notifications</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+          <TabsContent value="admin">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Info className="mr-2" />
+                  Admin Controls
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Admin features would go here, such as:</p>
+                <ul className="list-disc list-inside">
+                  <li>Manage disaster information</li>
+                  <li>User management</li>
+                  <li>Send notifications</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </>
   );
 };
 

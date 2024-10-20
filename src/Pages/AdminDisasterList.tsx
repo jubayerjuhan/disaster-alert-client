@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import client from "@/lib/client";
 import moment from "moment";
+import Navbar from "@/components/Navbar/Navbar";
 
 export interface Disaster {
   _id?: string;
@@ -374,14 +375,17 @@ export default function AdminSendAlert() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar
-        collapsed={sidebarCollapsed}
-        setCollapsed={setSidebarCollapsed}
-      />
-      <main className="flex-1 overflow-auto p-8">
-        <AdminDisasterList />
-      </main>
-    </div>
+    <>
+      <Navbar />
+      <div className="flex h-screen bg-gray-100">
+        <Sidebar
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+        <main className="flex-1 overflow-auto p-8">
+          <AdminDisasterList />
+        </main>
+      </div>
+    </>
   );
 }

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, ChevronLeft, ChevronRight, List } from "lucide-react";
 import UserTable from "@/components/UserTable/UserTable";
+import Navbar from "@/components/Navbar/Navbar";
 
 const Sidebar = ({
   collapsed,
@@ -73,15 +74,18 @@ export default function AdminSendAlert() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar
-        collapsed={sidebarCollapsed}
-        setCollapsed={setSidebarCollapsed}
-      />
-      <main className="flex-1 overflow-auto p-8">
-        <h1 className="text-2xl font-bold mb-4">User Management</h1>
-        <UserTable />
-      </main>
-    </div>
+    <>
+      <Navbar />
+      <div className="flex h-screen bg-gray-100">
+        <Sidebar
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+        <main className="flex-1 overflow-auto p-8">
+          <h1 className="text-2xl font-bold mb-4">User Management</h1>
+          <UserTable />
+        </main>
+      </div>
+    </>
   );
 }

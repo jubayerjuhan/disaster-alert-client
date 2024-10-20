@@ -61,7 +61,15 @@ export interface Disaster {
 //   },
 // ];
 
-const DisasterTable = () => {
+const DisasterTable = ({
+  setSelectedDisaster,
+  selectAble,
+  selectedDisaster,
+}: {
+  setSelectedDisaster?: React.Dispatch<React.SetStateAction<Disaster>>;
+  selectAble?: boolean;
+  selectedDisaster?: Disaster;
+}) => {
   const navigate = useNavigate();
   const [disasters, setDisasters] = useState<Disaster[] | null>(null);
 
@@ -107,6 +115,7 @@ const DisasterTable = () => {
             <TableHead>Severity</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Detail</TableHead>
+            {selectAble && <TableHead>Action</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -133,6 +142,21 @@ const DisasterTable = () => {
                   Details
                 </Button>
               </TableCell>
+              {selectAble && setSelectedDisaster && (
+                <TableCell>
+                  <Button
+                    className=""
+                    variant={"outline"}
+                    onClick={() => {
+                      setSelectedDisaster(disaster);
+                    }}
+                  >
+                    {selectedDisaster?._id === disaster._id
+                      ? "Selected"
+                      : "  Select This Disaster"}
+                  </Button>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

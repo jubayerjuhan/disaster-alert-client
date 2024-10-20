@@ -27,6 +27,8 @@ import client from "@/lib/client";
 import toast from "react-hot-toast";
 
 import "./UserTable.css";
+import DisasterTable, { Disaster } from "../DisasterTable/DisasterTable";
+import moment from "moment";
 
 // Define the User type
 type User = {
@@ -35,22 +37,43 @@ type User = {
   email: string;
 };
 
-const defaultTemplate = `
-      <h1>Disaster Alert</h1>
+export default function UserTable() {
+  const [selectedDisaster, setSelectedDisaster] = useState<Disaster>({
+    _id: "",
+    name: "",
+    type: "",
+    location: "",
+    date: "",
+    severity: "",
+    status: "",
+  });
+
+  const generateEmailTemplate = (disaster: Disaster) => {
+    return `
+      <h1>Disaster Alert: ${disaster.name}</h1>
       <p>Dear User,</p>
-      <p>We regret to inform you that a disaster has occurred in your area. Please take the necessary precautions and stay safe.</p>
+      <p>We regret to inform you that a disaster has occurred in your area:</p>
+      <ul>
+        <li><strong>Type:</strong> ${disaster.type}</li>
+        <li><strong>Location:</strong> ${disaster.location}</li>
+        <li><strong>Date:</strong> ${moment(disaster.date).format(
+          "DD-MM-YYYY"
+        )}</li>
+        <li><strong>Severity:</strong> ${disaster.severity}</li>
+        <li><strong>Status:</strong> ${disaster.status}</li>
+      </ul>
+      <p>Please take the necessary precautions and stay safe.</p>
       <p>For more information, please visit our website or contact our support team.</p>
       <p>Stay safe,</p>
       <p>Your Disaster Management Team</p>
     `;
-
-export default function UserTable() {
+  };
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
-  const contentBlock = htmlToDraft(defaultTemplate);
+  const contentBlock = htmlToDraft(generateEmailTemplate(selectedDisaster));
   const contentState = ContentState.createFromBlockArray(
     contentBlock.contentBlocks
   );
@@ -62,6 +85,15 @@ export default function UserTable() {
     setSelectAll(selectedUsers.length === users.length);
   }, [selectedUsers, users]);
 
+  useEffect(() => {
+    if (selectedDisaster) {
+      const contentBlock = htmlToDraft(generateEmailTemplate(selectedDisaster));
+      const contentState = ContentState.createFromBlockArray(
+        contentBlock.contentBlocks
+      );
+      setEditorState(EditorState.createWithContent(contentState));
+    }
+  }, [selectedDisaster]);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -141,6 +173,13 @@ export default function UserTable() {
           ))}
         </TableBody>
       </Table>
+      <div className="mt-4">
+        <DisasterTable
+          setSelectedDisaster={setSelectedDisaster}
+          selectAble
+          selectedDisaster={selectedDisaster}
+        />
+      </div>
 
       <div className="mt-4 space-x-4">
         <Button onClick={handleSelectAll}>
@@ -163,7 +202,13 @@ export default function UserTable() {
               selected users
             </DialogDescription>
           </DialogHeader>
-          <div className="mt-4">
+          <div
+            className="mt-4"
+            style={{
+              height: "400px",
+              overflow: "auto",
+            }}
+          >
             <Editor
               editorState={editorState} // Changed to editorState instead of defaultEditorState
               onEditorStateChange={setEditorState}
